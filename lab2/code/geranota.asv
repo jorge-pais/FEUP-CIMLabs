@@ -1,0 +1,30 @@
+% Play me !
+aaa = geranota(2^(0/12), 1, 22050);
+max(aaa)
+plot(1:length(aaa), aaa)
+sound(aaa, 22050);
+function amostras = geranota(nota, duracao, Fs)
+
+    % Periodo fundamental da nota
+    T0 = 1.0/(440.0*nota);
+    
+    A = 5000;
+    K = 5;
+
+    % Sintese da onda
+    T_sine = duracao*0.4;
+    t = 0:(1/Fs):(T_sine/4);
+    x = zeros(size(t));
+    for k = 1:K 
+        x = x - 2*A/(pi*k)*sin((2*pi/T0)*k.*t);
+    end
+    
+    % Fade-in using first quarter of sine wave
+    t = 0:1/Fs:(0.4*duracao);
+    t = t(1:(length(t)-1));
+    n = 1:length(t);
+    x(n) = x(n) .* sin(2*pi/(0.4*duracao).*t); 
+    x(Fs*duracao - n) = x(Fs*duracao - n) .* sin(2*pi/(0.4*duracao).*t);
+
+    amostras = x./A; % Normalize amplitudes, maybe at the end
+end
