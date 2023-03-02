@@ -1,5 +1,3 @@
-addpath("/home/jorgep/OneDrive/Faculdade/Mestrado/S2/CIM/trabalhos/lab2/code")
-
 Fs = 22050;
 
 pauta = ["C4", "D4", "E4", "F4", "F4", "F4", "C4", "D4", "C4", "D4", ...
