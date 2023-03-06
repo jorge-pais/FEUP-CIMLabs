@@ -29,7 +29,7 @@ function amostras = geranota(nota, duracao, Fs)
     
     t = 0:1/Fs:duracao;
     t = t(1:(length(t)-1));
-    plot(t,x);
+    %plot(t,x);
 
     amostras = x./A; % normalizar
 
