@@ -26,12 +26,9 @@ function amostras = geranota(nota, duracao, Fs)
     sinusoidal = sin((2*pi/T_sinusoide)*t);
     x(index) = x(index).*sinusoidal;
     x(floor(Fs*duracao)-index+1) = x(floor(Fs*duracao)-index+1).*sinusoidal;
-    
-    t = 0:1/Fs:duracao;
-    t = t(1:(length(t)-1));
-    %plot(t,x);
 
-    amostras = x./A; % normalizar
+    amostras = x/max(abs(x)); % normalizar
+end
 
 %     % Periodo fundamental da nota
 %     T0 = 1.0/(440.0*nota);
@@ -55,4 +52,3 @@ function amostras = geranota(nota, duracao, Fs)
 %     x((9/10*Fs*duracao):(Fs*duracao)) = x((9/10*Fs*duracao):(Fs*duracao)) .* cos(2*pi/(0.4*duracao).*n);
 % 
 %     amostras = x./A; % Normalize amplitudes, maybe at the end
-end
