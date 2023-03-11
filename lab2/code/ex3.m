@@ -1,7 +1,8 @@
 Fs = 22050;
 
-pauta = ["C4", "D4", "E4", "F4", "F4", "F4", "C4", "D4", "C4", "D4", ...
-    "D4", "D4", "C4", "G4", "F4", "E4", "E4", "E4", "C4", "D4", "E4", "F4"];
+do = "C4"; re = "D4"; mi = "E4"; fa = "F4"; sol = "G4";
+pauta = [do, re, mi, fa, fa, fa, do, re, do, re, ...
+    re, re, do, sol, fa, mi, mi, mi, do, re, mi, fa];
 
 samples = zeros(1);
 
@@ -12,3 +13,4 @@ end
 samples = [samples zeros(1, 0.5*Fs)]; % add silence to avoid clicks
 
 sound(samples, Fs)
+audiowrite("ex3.wav", samples, Fs);

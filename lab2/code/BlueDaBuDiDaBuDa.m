@@ -23,5 +23,5 @@ samples = levelVoice1*samples1 + levelVoice2*samples2(1:length(samples1));
 % Zero-padding + amplitude normalization to [-1, 1];
 samples = [samples zeros(1, 100)]/max(abs(samples)); 
 
-sound(samples, Fs);
-audiowrite("teste.wav", samples, Fs);
+%sound(samples, Fs);
+audiowrite("blue.wav", samples, Fs);
