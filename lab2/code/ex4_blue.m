@@ -1,4 +1,4 @@
-BPM = 254; T_quarter = 60/254;
+BPM = 254; T_quarter = 60/BPM;
 Fs = 22050;
 
 % Load the notes+length for both voices
@@ -23,5 +23,5 @@ samples = levelVoice1*samples1 + levelVoice2*samples2(1:length(samples1));
 % Zero-padding + amplitude normalization to [-1, 1];
 samples = [samples zeros(1, 100)]/max(abs(samples)); 
 
-%sound(samples, Fs);
+sound(samples, Fs);
 audiowrite("blue.wav", samples, Fs);

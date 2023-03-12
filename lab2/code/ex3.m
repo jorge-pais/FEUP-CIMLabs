@@ -12,5 +12,10 @@ for i = 1:length(pauta)
 end
 samples = [samples zeros(1, 0.5*Fs)]; % add silence to avoid clicks
 
-sound(samples, Fs)
+%sound(samples, Fs)
 audiowrite("ex3.wav", samples, Fs);
+
+
+plot(1:0.9*Fs, samples(1:0.9*Fs));
+ylabel("Amplitude");
+xlabel("Time (s)");

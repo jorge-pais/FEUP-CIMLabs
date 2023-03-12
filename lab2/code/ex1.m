@@ -17,7 +17,6 @@ end
 
 x = x./A; % Normalize volume
 
-% Plot one-ish period
 figure(1); plot(n(1:(1.1*Fs/wave_freq)), x((1:(1.1*Fs/wave_freq))))
 
 sound(x, Fs)
