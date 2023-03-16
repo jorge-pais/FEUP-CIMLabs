@@ -1,0 +1,1 @@
+[A1, A2] = ampliaReduz(128, 4, 3);
