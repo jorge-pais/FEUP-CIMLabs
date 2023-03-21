@@ -12,7 +12,7 @@ function [resultado1,resultado2] = ampliaReduz (N, factor, metodo);
 Z=imzoneplate(N);
 figure(1);
 imshow(Z);
-title('imagem Z de teste original');
+title('imagem Z de teste original'); drawnow
 
 % se se tratar de uma redu??o (factor<1) obtem a imagem apenas por
 % elimina??o de amostras e depois usa imresize
@@ -21,7 +21,7 @@ if factor<1
     Zreduzida = Z(1:factorReducao:end,1:factorReducao:end);
     figure(2);
     imshow(Zreduzida)
-    title('Zreduzida por eliminacao')
+    title('Zreduzida por eliminacao'); drawnow
     
 % agora obtem nova imagem reduzida usando imresize com o metodo escolhido
     switch metodo
@@ -34,7 +34,7 @@ if factor<1
     end
     figure(3);
     imshow(ZreduzidaMatlab);
-    title('Zreduzida com imresize');
+    title('Zreduzida com imresize'); drawnow
     % retorna as imagens reduzidas com os dois m?todos
     resultado1=Zreduzida;
     resultado2=ZreduzidaMatlab;
@@ -54,7 +54,7 @@ else
     end
     figure(4);
     imshow(Zampliada);
-    title('Z ampliada por repeticao');
+    title('Z ampliada por repeticao'); drawnow
     
     % agora amplia usando imresize com o m?todo escolhido
     switch metodo
@@ -67,7 +67,7 @@ else
     end
     figure(5);
     imshow(ZampliadaMatlab);
-    title('Z ampliada com imresize');
+    title('Z ampliada com imresize'); drawnow
 % retorna as imagens ampliadas com os dois m?todos
 resultado1=Zampliada;
 resultado2=ZampliadaMatlab;

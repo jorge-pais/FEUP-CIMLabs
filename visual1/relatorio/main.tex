@@ -1,0 +1,861 @@
+\documentclass[10pt,twoside]{article} 
+\usepackage[a4paper,portrait, top=20mm,bottom=15mm,left=25mm,right=25mm]{geometry}
+\author{}
+
+\usepackage[utf8]{inputenc} 
+
+\usepackage[portuguese]{babel}
+\usepackage[T1]{fontenc}
+
+\usepackage{hyphenat} 
+\usepackage{amsmath,amsthm,amsfonts}
+\usepackage[dvipsnames]{xcolor}
+\renewcommand{\figurename}{Figura}
+\renewcommand{\tablename}{Tabela}
+\usepackage{hyperref,graphicx}
+\usepackage{gensymb}
+
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{xcolor}
+
+\usepackage{siunitx}
+\sisetup{detect-all}
+
+\usepackage{graphicx}
+\usepackage{enumitem}
+
+\usepackage{listings}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+% Disable all paragraph indentation
+\setlength{\parindent}{0pt}
+
+\makeatletter
+\renewcommand{\maketitle}{\bgroup\setlength{\parindent}{0pt}
+	\begin{center}
+		\textbf{\@title}
+		
+		\@author
+	\end{center}\egroup
+}
+\makeatother
+
+
+\title{{\Large\bf\center CIM - Trabalho 3} 
+\\ Introdução ao Processamento de Sinais Visuais}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\vspace{10pt}
+\noindent
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}@{}l r@{}} %to \textwidth {@{}X[l] X[-1, r]@{}}
+	{\bf CIM 2022/2023} & {\bf David Rainho} up201906994 \\
+	{\bf Turma:} 1MEEC\_T02 & {\bf Jorge Pais} up201904841
+\end{tabular*}
+
+\noindent{\rule{\linewidth}{1.5pt}}
+
+\vspace{20pt}
+
+\section{Experiências com espaços de cor}
+
+\subsection{Conversão de \textsl{RGB} para \textsl{HSV}}
+Neste problema, desenvolveu-se um script em MATLAB para realizar a conversão das imagens, originalmente no espaço RGB, para o espaço de cor HSV (\texttt{ex1\_1.m}). Os canais deste espaço representam a Tonalidade (H), Saturação (S) e Valor (V).
+
+Na Figura \ref{fig:lighthouse}, apresentam-se a imagem original RGB e o resultado da conversão para HSV. Repare-se que a visualização da transformação HSV assume que no canal R está a tonalidade, G a saturação e B o valor/intensidade.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{1_1/lighthouseRGB.png}
+        \subcaption{}
+        \label{lighthouseOriginal1}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{1_1/lighthouseHSV.png}
+        \subcaption{}
+        \label{lighthouseHSV}
+    \end{minipage}
+    \caption{Representação original (a) e HSV (b) da image do farol}
+    \label{fig:lighthouse}
+\end{figure}
+
+
+A Tonalidade (H), estabelece uma relação de semelhança visual com as cores vermelho ($\simeq0\degree/360\degree$), verde ($\simeq120\degree$) e azul ($\simeq240\degree$), sendo uma grandeza dada em graus ($\in [0\degree;360\degree]$). Esta é função do espaço RGB da seguinte forma:
+$$
+H = 
+\begin{cases}
+    undefined, & \text{ se }MAX=MIN\\
+    60\degree\times(\frac{G-B}{MAX-MIN}), & \text{ se }R=MAX\\
+    60\degree\times(2+\frac{B-R}{MAX-MIN}), & \text{ se }G=MAX\\
+    60\degree\times(4+\frac{R-G}{MAX-MIN}), & \text{ se }B=MAX\\
+\end{cases},
+$$
+onde $MAX=max\{R,G,B\}$ e $MIN=min\{R,G,B\}$ . Caso $H<0\degree$, $H=H+360\degree$.
+
+A Saturação (S), mede a pureza visual das cores, sendo uma grandeza dada no intervalo $[0;1]$. Esta é função do espaço RGB da seguinte forma:
+$$
+S =
+\begin{cases}
+    0, & \text{ se } MAX=0\\
+    \frac{MAX-MIN}{MAX}, & \text{ caso contrário }
+\end{cases}.
+$$
+
+O Valor (V), representa a intensidade luminosa, tendo valor no intervalo $[0;1]$. Esta é função do espaço RGB da seguinte forma:
+$$V = MAX$$.
+
+Na Figura \ref{fig:HSVchannels}, estão representados os canais os canais de Tonalidade, Saturação e Valor na escala de cizento.
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{1_1/lighthouseHue.png}
+        \subcaption{}
+        \label{hue}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{1_1/lighthouseSaturacao.png}
+        \subcaption{}
+        \label{saturation}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{1_1/lighthouseValue.png}
+        \subcaption{}
+        \label{value}
+    \end{minipage}
+    \caption{Representação dos canais HSV: \textsl{Hue} (Tonalidade) (a), \textsl{Saturation} (b), \textsl{Value/Intensity} (c)}
+    \label{fig:HSVchannels}
+\end{figure}
+Após análise dos diferentes canais na escala de cizento, pode-se verificar que:
+\begin{itemize}
+    \item Como os graus da tonalidade (hue) estarão representados no intervalo $[0,1]$ ($[0;360]\degree$), a cor vermelha, na escala cinzenta, corresponderá à cor preta ($G>B$) ou branca ($B>G$), respetivamente. Daí, o telhado as cores negras e brancas do telhado (vermelho na imagem original).\\
+    \item No canal da saturação, é visível no telhado (vermelho), relva (verde) e céu (azul), que estão representados a branco e demonstram que essas são práticamente puras.\\
+    \item Quando comparados com a relva e telhado, visualmente os elementos de maior intensidade são o céu e o farol. Daí o contraste entre estes elementos do cenário ser vísivel no canal de valor/intensidade luminosa.
+\end{itemize}
+
+\subsection{Conversão de \textsl{RGB} para \textsl{YCbCr}}
+
+Do mesmo modo que se procedeu no problema anterior, também se desenvolveu um curto script em MATLAB para realizar a conversão das imagens para o espaço de cor YCbCr, no ficheiro \texttt{ex1\_2.m}. Neste espaço, ao invés de se guardar cada um dos canais de cores, são guardados os parâmetros de Luminância (Y) e Crominância (Cb e Cr).
+
+Relativamente ao espaço RGB, os valores destes parâmetros são calculados da seguinte maneira:
+
+$$
+\begin{cases}
+    Y' = K_R R' + K_G G' +K_B B'\\
+    C_B = \frac{1}{2} \frac{B' - Y'}{1-K_B}\\
+    C_R = \frac{1}{2} \frac{R' - Y'}{1-K_R}\\
+\end{cases}
+$$
+A luminância $Y'$ é essencialmente uma soma ponderada dos 3 canais de cores, e os parâmetros de crominância são obtidos através da diferença entre os canais de cores vermelha/azul e a luminância.
+
+Correndo o script sobre a imagem \texttt{lighthouse.png} do MATLAB, o resultado da conversão para YCbCr está representado na Figura \ref{fig:lighthouse1}.
+
+\vfill
+\pagebreak
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{1_2/lighthouseRGB.png}
+        \subcaption{}
+        \label{lighthouseOriginal}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{1_2/lighthouseYCbCr.png}
+        \subcaption{}
+        \label{lighthouseYCbCr}
+    \end{minipage}
+    \caption{Representação original (a) e YCbCr (b) da image do farol}
+    \label{fig:lighthouse1}
+\end{figure}
+
+É possível também analisar individualmente cada um dos canais da figura no espaço de cor YCbCr na Figura \ref{fig:lighthousechannels}. A partir do sinal de luminância (\ref{luma}) é possível ter uma ideia da luminosidade de cada parte da imagem, como se este canal se tratasse de uma versão monocromática da imagem original. 
+
+Por sua vez os sinais de crominância, representam a diferença entre canais das cores vermelha/azul e a luminância. Por exemplo, no sinal de crominância \textsl{Blue-difference} (\ref{blueDiff}) é possível verificar que a parte mais intensa da imagem é a do céu, enquanto que no sinal de crominância \textsl{Red-difference} a parte mais clara será a do telhado da casa.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{1_2/luma.png}
+        \subcaption{}
+        \label{luma}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{1_2/blueDiff.png}
+        \subcaption{}
+        \label{blueDiff}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{1_2/redDiff.png}
+        \subcaption{}
+        \label{redDiff}
+    \end{minipage}
+    \caption{\centering Representação dos canais YCbCr: \textsl{Luma} (a), \textsl{Blue-difference Chroma} (b), \textsl{Red-difference Chroma} (c)}
+    \label{fig:lighthousechannels}
+\end{figure}
+
+\subsection{Conversão para \textsl{YUV}}
+A representação do modelo de cor YCbCr é usado em sistemas digitais. Neste problema, apresenta-se o modelo análogo YUV usado em sistemas analógicos. Pretende-se verificar se existem diferenças entre os dois. As imagens geradas para comparação, foram obtidas através do código MATLAB fornecido, \texttt{rgb2yuv.m}, e sujeito a ligeiras alterações. Na figura \ref{fig:lighthouse2} apresentam-se as imagens YCbCr e YUV para comparação.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{1_2/lighthouseYCbCr.png}
+        \subcaption{}
+        \label{lighthouseYCbCr1}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{1_3/lighthouseYUV.png}
+        \subcaption{}
+        \label{lighthouseYUV}
+    \end{minipage}
+    \caption{Representação YCbCr (a) e YUV (b) da image do farol}
+    \label{fig:lighthouse2}
+\end{figure}
+
+A diferença entre os dois é quase impercetível. Pessoalmente (David), noto que o tronco do farol e a parede da casa, apresentam maior nitidez (talvez aparente claridade). Também o céu, a tons de verde, aparenta ter uma mancha maior em redor da casa.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{1_3/lighthouseY.png}
+        \subcaption{}
+        \label{YUV_Y}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{1_3/lighthouseU.png}
+        \subcaption{}
+        \label{YUV_U}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{1_3/lighthouseV.png}
+        \subcaption{}
+        \label{YUV_V}
+    \end{minipage}
+    \caption{\centering Representação dos canais YUV: \textsl{Luma} (a), \textsl{Blue-difference Chroma} (b), \textsl{Red-difference Chroma} (c)}
+    \label{fig:lighthousechannelsYUV}
+\end{figure}
+
+Apesar de serem muito semelhantes os dois modelos de cores, dependendo do \textit{standard}, apresentam valores constantes de $K_R$, $K_G$ e $K_B$ diferentes.
+
+Para a visualização dos canais U e V análogos a Cb e Cr, respetivamente, é necessário adicionar uma constante (por exemplo, 0.5) que torne os seus valores positivos entre 0 e 1. Deve ser realizada esta soma, pois os canais U e V são originalmente do tipo \textit{signed}.
+
+
+
+
+
+
+\section{Variação das dimensões espaciais de imagem}
+
+Para esta secção do trabalho prático é utilizada a função \texttt{ampliaReduz()} fornecida para gerar uma imagem \textsl{zone plate} (Figura \ref{fig:testPlateExample}) e ampliar/reduzir as dimensões desta utilizando diferentes métodos de redimensionamento e \textsl{anti-aliasing}. Os métodos disponibilizados são: \textsl{nearest-neighbor} (repetição), \textsl{bilinear} e \textsl{bicubic}.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{\textwidth}
+        \centering
+        \includegraphics[width=0.2\textwidth]{2/part1orig.png}
+    \end{minipage}
+    \caption{Exemplo de uma imagem test plate}
+    \label{fig:testPlateExample}
+\end{figure}
+
+\subsection{Ampliação}
+
+Começou-se primeiro por chamar a função \texttt{ampliaReduz} de forma a gerar uma \textsl{zone plate} de 256x256 pixeis e de aumentar por um fator de 4. Utilizando a função \texttt{pwelch()} do MATLAB, é possível determinar a densidade espectral das diferentes imagens geradas. Os espetros da imagem original e da ampliada por repetição são apresentadas na Figura \ref{fig:amplia1}.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{2/part1orig_spec.png}
+        \subcaption{}
+        \label{ampliaOrig}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{2/part1repeat_spec.png}
+        \subcaption{}
+        \label{ampliaRepeat}
+    \end{minipage}
+    \caption{Densidades espectrais de potência do sinal original (a) e ampliado por repetição (b)}
+    \label{fig:amplia1}
+\end{figure}
+
+Verifica-se que, como no caso da sobreamostragem, que ocorreu uma contração da densidade espectral do sinal original(\ref{ampliaOrig}). É possível observar que no caso da ampliação por repetição (\ref{ampliaRepeat}) que aconteceram sobreposições no espectro do sinal, ou seja ocorreu \textsl{aliasing}.
+
+Também se utilizou a função com so métodos \textsl{bilinear} e \textsl{bicubic} de \textsl{upscaling}. Assim se obtiveram os resultados da Figura \ref{fig:amplia2}:
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{2/part1bilinear_spec.png}
+        \subcaption{}
+        \label{ampliaBilinear}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{2/part1bicubic_spec.png}
+        \subcaption{}
+        \label{ampliaBicubic}
+    \end{minipage}
+    \caption{Densidades espectrais dos sinais ampliados por interpolação bilinear (a) e bicúbica (b)}
+    \label{fig:amplia2}
+\end{figure}
+
+Observa-se que ambos os casos de \textsl{anti-aliasing} apresentam menos reflexões espectrais devido á sobreamostragem, comparativamente ao caso da ampliação por repetição das amostras (\ref{ampliaRepeat}). É também tornado evidente que o método que introduz o mínimo de \textsl{aliasing} ao sinal é o de ampliação com interpolação bicúbica (\ref{ampliaBicubic}).
+
+\subsection{Redução}
+
+À semelhança da secção anterior, também se realizaram as mesmas operações de re-amostragem sobre a imagem \textsl{test plate} de 256x256 pixeis, porém utilizando um fator de escala de 0.5. A densidade espectral do sinal original será igual à da Figura \ref{ampliaOrig}, enquanto que o espetro resultante das reduções está representado na Figura \ref{fig:reduz}.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{2/part2_repeat.png}
+        \subcaption{}
+        \label{reduzRepeat}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{2/part2_bilinear.png}
+        \subcaption{}
+        \label{reduzBilinear}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{2/part2_bicubic.png}
+        \subcaption{}
+        \label{reduzBicubic}
+    \end{minipage}
+    \caption{\centering Densidades espectrais dos sinais reduzidos por eliminação (a), interpolação bilinear (b) e interpolação bicúbica (c)}
+    \label{fig:reduz}
+\end{figure}
+
+Como seria de esperar, a redução das dimensões da imagem é equivalente a realizar uma operação de sub-amostragem no sinal original, alargando o espetro relativamente ao sinal original\ref{ampliaOrig}. Portanto em todos os casos se perde informação espetral.
+
+É porém claro que dos três casos da redução, que o processo de eliminação dos pixeis (\ref{reduzRepeat}) apresenta o pior desempenho de todos os métodos. Entretanto ambos os métodos \textsl{bilinear} (\ref{reduzBilinear}) e \textsl{bicubic} (\ref{reduzBicubic}) apresentam espectros praticamente iguais. 
+
+\section{Experiências de filtragem}
+
+\subsection{Parte 1}
+Nesta secção pretende-se explorar alguns dos filtros possíveis de gerar com o método \textit{fspecial}, depois aplicáveis às imagens através da função \textit{imfilter}. Os filtros podem ser subdivididos pelas suas características da seguinte forma:
+\begin{enumerate}
+    \item efeito de \textit{blur} é obtido dos filtros ``disk'' e ``motion'',
+    \item deteção de transições pode ser realizada pelos filtros ``laplacian'' (e a sua vairante ``log''), ``sobel'' e ``perwitt'';
+    \item efeito de suavização da imagem pode ser realizado pelo ``average'' e ``gaussian''\footnote{No caso de as janelas serem de dimensões elevadas, assim como o parâmetro ``sigma'' no filtro gaussiano, terá também efeito de \textit{blur}.}.
+\end{enumerate}
+
+Na figura \ref{fig:praia}, é visível a imagem original. Posteriormente, será possível estabelecer comparações visuais entre esta e as imagens filtradas.
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{\textwidth}
+        \centering
+        \includegraphics[width=0.4\textwidth]{3_1/praia_original.png}
+    \end{minipage}
+    \caption{Imagem original da praia}
+    \label{fig:praia}
+\end{figure}
+
+\subsubsection{Filtros de \textit{blur}}
+
+Primeiramente, são vísiveis na figura \ref{fig:blur} os efeitos referidos como \textit{blur}. O filtro ``disk'', dá a aparência de névoa sobre a imagem original, enquanto o ``motion'' aparenta inserir movimento através do efeito, habitualmente existente em vídeos quando a câmera se movimenta rapidamente no espaço.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{3_1/disk.png}
+        \subcaption{}
+        \label{disk}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{3_1/motion.png}
+        \subcaption{}
+        \label{motion}
+    \end{minipage}
+    \caption{Efeitos de \textit{blur}, usando os filtros ``disk'', radius=5, (a) e ``motion'', len=50 e theta=0 (b)}
+    \label{fig:blur}
+\end{figure}
+
+\subsubsection{Filtros de deteção de bordas}
+
+De seguida, apresentam-se os efeitos correspondentes à deteção de transições.
+
+Na figura \ref{fig:trans1}, é visível os efeitos ``laplacian'' e ``log'' (``gaussian'' seguido do ``laplacian'').
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{3_1/laplacian.png}
+        \subcaption{}
+        \label{laplacian}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{3_1/log.png}
+        \subcaption{}
+        \label{log}
+    \end{minipage}
+    \caption{Deteção de bordas, usando os filtros ``laplacian'', alpha=0.01, (a) e ``log'', hsize=5 e sigma=0.5 (b)}
+    \label{fig:trans1}
+\end{figure}
+
+Na figura \ref{fig:trans2}, estão apresentados os efeitos ``sobel'' e ``perwitt''.
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{3_1/perwitt.png}
+        \subcaption{}
+        \label{perwitt}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{3_1/sobel.png}
+        \subcaption{}
+        \label{sobel0}
+    \end{minipage}
+    \caption{Deteção de bordas, usando os filtros ``perwitt'' (a) e ``sobel''(b)}
+    \label{fig:trans2}
+\end{figure}
+
+Repare-se que nos filtros de ``perwitt'' e ``sobel'', o contorno inferior das nuvens, assim como a costa são linhas praticamente horizontais. Essas não são visíveis nos outros dois filtros, pois o ``laplacian'' e ``log'' baseiam-se no operador Laplaciano e só realçam transições isotrópicas (que ocorrem em todas as direções).
+
+\subsubsection{Filtro ``average'' e ``gaussian''}
+Nas figuras \ref{fig:avg}, \ref{fig:gauss1} e \ref{fig:gauss2}, estão representadas imagens após aplicação dos filtros ``average'' (primeira figura) e ``gaussian'' (as restantes figuras).
+
+Na figura \ref{fig:avg}, é visualmente percetível a evolução do impacto do filtro na imagem, para valores crescentes do tamanho da janela. O aumento das dimensões do kernel, envolve mais pixéis vizinhos para a realização da média, o que dá a sensação da imagem se esbater (transições abruptas suavizam-se).
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{3_1/average_N3.png}
+        \subcaption{}
+        \label{avg3}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{3_1/average_N5.png}
+        \subcaption{}
+        \label{avg5}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{3_1/average_N7.png}
+        \subcaption{}
+        \label{avg7}
+    \end{minipage}
+    \caption{\centering Imagem após aplicação do filtro ``averaging'' com dimensão das janelas: hsize=3 (a), hsize=5 (b), hsize=7 (c)}
+    \label{fig:avg}
+\end{figure}
+
+Nas figuras \ref{fig:gauss1} e \ref{fig:gauss2}, são visíveis os resultados para diferentes dimensões e desvio padrão. Enquanto as dimensões do kernel possibilitam a participação de mais pixéis na filtragem, o parâmetro sigma permite controlar o peso dos pixéis vizinhos na filtragem.
+
+Na figura \ref{fig:gauss1}, vê-se que para diferentes janelas, mesmo com dimensões elevadas, caso o valor de sigma seja baixo, o peso dos pixéis vizinhos é desprezável comparado com o central. Assim, a imagem obtida aparenta ser igual (exceto em pequenos detalhes que aparenta suavizado) à original.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{3_1/3_1n/gauss_N3_sig1.png}
+        \subcaption{}
+        \label{gauss31}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{3_1/3_1n/gauss_N5_sig1.png}
+        \subcaption{}
+        \label{gauss51}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{3_1/3_1n/gauss_N7_sig1.png}
+        \subcaption{}
+        \label{gauss71}
+    \end{minipage}
+    \caption{\centering Imagem após aplicação do filtro ``gaussian'' com dimensão das janelas: hsize=3 (a), hsize=5 (b), hsize=7 (c) para um mesmo sigma=1}
+    \label{fig:gauss1}
+\end{figure}
+
+Na figura \ref{fig:gauss2}, é percetível que se sigma for elevado, quando a janela é pequena o efeito de suavização aproxima-se do efeito do filtro de ``averaging''. Para o mesmo sigma elevado, o efeito torna-se mais notório (\textit{blur}), quando a janela é maior e o kernel envolve mais pixéis no processo de filtragem.
+
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{3_1/3_1n/gaussN3sig3.png}
+        \subcaption{}
+        \label{gauss33}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{3_1/3_1n/gaussN5sig3.png}
+        \subcaption{}
+        \label{gauss53}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{3_1/3_1n/gaussN7sig3.png}
+        \subcaption{}
+        \label{gauss73}
+    \end{minipage}
+    \caption{\centering Imagem após aplicação do filtro ``gaussian'' com dimensão das janelas: hsize=3 (a), hsize=5 (b), hsize=7 (c) para um mesmo sigma=3}
+    \label{fig:gauss2}
+\end{figure}
+
+
+\subsection{Parte 2}
+
+No seguinte problema, é pedido que se implemente explicitamente alguns métodos de filtragem. Primeiramente foram implementadas duas funções que realizam esta operação utilizando convoluções, nomeadamente a função \texttt{convolucao2D()} que realiza a operação de convolução entre duas matrizes (equivalente á função \texttt{conv2d()} do MATLAB) e a função \texttt{aplicarFiltro()} que aplica esta função devidamente para os diferentes casos de cores nas imagens (Preto \& Branco / Cores).
+
+\subsubsection{Filtro de média}
+
+O primeiro filtro a ser testado foi o filtro de média, que efetivamente realiza a média do valor dos pixeis numa janela em torno de cada pixel. Esta operação pode ser implementada através de uma convolução e, no exemplo de uma média 3x3, a seguinte matriz é utilizada:
+
+$$
+    \textsl{Kernel} = \frac{1}{3^2}
+    \begin{bmatrix}
+        1 & 1 & 1\\
+        1 & 1 & 1\\
+        1 & 1 & 1
+    \end{bmatrix}
+$$
+
+Aplicando este filtro com janelas 3x3 e 5x5 na imagem \texttt{ruido1.jpg}, obtiveram-se os seguintes resultados apresentados na figura \ref{fig:ruido1_avg}. O mesmo procedimento foi utilizado sobre a imagem \texttt{ruido2.jpg} como evidenciado na figura \ref{fig:ruido2_avg}.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{3_2/ruido1_mean3.png}
+        \subcaption{}
+        \label{ruido1_avg3}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{3_2/ruido1_mean5.png}
+        \subcaption{}
+        \label{ruido1_avg5}
+    \end{minipage}
+    \caption{Resultado do filtro de média 3x3 (a) e 5x5 (b) na imagem \texttt{ruido1.jpg}}
+    \label{fig:ruido1_avg}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{3_2/ruido2_mean3.png}
+        \subcaption{}
+        \label{ruido2_avg3}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{3_2/ruido2_mean5.png}
+        \subcaption{}
+        \label{ruido2_avg5}
+    \end{minipage}
+    \caption{Resultado do filtro de média 3x3 (a) e 5x5 (b) na imagem \texttt{ruido2.jpg}}
+    \label{fig:ruido2_avg}
+\end{figure}
+
+Na imagem \texttt{ruido1.jpg} é possível observar que o filtro foi capaz de remover parte do ruido da imagem, tendo apenas suavizado alguns dos detalhes desta. Para a imagem \texttt{ruido2.jpg} o ruído não foi completamente eliminado, e com o efeito de suavização não se perdeu tanto detalhe devido à resolução superior desta segunda imagem.
+
+Isto deve-se ao facto da primeira imagem aparentar ter sido afetada por ruído gaussiano, enquanto que a segunda apresentava algo mais parecido com ruído \textsl{salt-and-pepper}. O filtro de média comporta-se bastante melhor no primeiro caso.
+
+\subsubsection{Filtro de mediana}
+
+De seguida, alguns filtros de mediana foram testados para os mesmos casos que o filtro de média. Para realizar estas operações de filtragem, foi implementada a função \texttt{medianfilter2D()} que para cada pixel da imagem de entrada realiza a filtragem utilizando a mediana de uma janela em torno desse (como na função \texttt{medfilt2()} do MATLAB).
+
+Aplicando esta filtragem sobre as imagem de teste \texttt{ruido1.jpg} e \texttt{ruido2.jpg}, foram obtidos os resultados das figuras \ref{fig:ruido1_median} e \ref{fig:ruido2_median}, respetivamente.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{3_2/ruido1_median3.png}
+        \subcaption{}
+        \label{ruido1_median3}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{3_2/ruido1_median5.png}
+        \subcaption{}
+        \label{ruido1_median5}
+    \end{minipage}
+    \caption{Resultado do filtro de mediana 3x3 (a) e 5x5 (b) na imagem \texttt{ruido1.jpg}}
+    \label{fig:ruido1_median}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{3_2/ruido2_median3.png}
+        \subcaption{}
+        \label{ruido2_median3}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{3_2/ruido2_median5.png}
+        \subcaption{}
+        \label{ruido2_median5}
+    \end{minipage}
+    \caption{Resultado do filtro de mediana 3x3 (a) e 5x5 (b) na imagem \texttt{ruido2.jpg}}
+    \label{fig:ruido2_median}
+\end{figure}
+
+Observando a figura \ref{fig:ruido1_median}, é possível verificar que a filtragem foi capaz de remover o "formigueiro" visual do ruído gaussiano, porém é aparente que alguns artifactos foram introduzidos na imagem, por exemplo no caso 3x3 (\ref{ruido1_median3}), aonde alguns pontos cinzentos escuros surgem no céu e nos ramos da árvore.
+
+Por sua vez, os resultados na figura \ref{fig:ruido2_median} revelam uma performance de filtragem nos casos de ruído \textsl{salt-and-pepper} bastante superior aquela demonstrada pelo filtro de média. No caso 3x3 (\ref{ruido2_median3}) todo o ruído foi eliminado e grande parte do detalhe foi preservado, enquanto que no caso 5x5 (\ref{ruido2_median5}) o efeito da filtragem é mais extremo, aonde se perdeu bastante detalhe entre as bordas dos objetos (por exemplo, nos tijolos das chaminé).
+
+\subsubsection{Sobel Filter}
+
+De seguida foram analisados dois filtros utilizados em algoritmos de deteção de bordas em imagens: o operador de Sobel e o operador de Prewitt. Em ambos os casos, a filtragem é realizada através de duas convoluções seguidas, e no caso dos operadores de Sobel é realizada através das seguintes matrizes:
+
+$$
+    \textsl{Sobel} \Rightarrow
+    \begin{bmatrix}
+        -1 & -2 & -1 \\
+        0 & 0 & 0 \\
+        1 & 2 & 1
+    \end{bmatrix}
+    \begin{bmatrix}
+        -1 & 0 & 1 \\
+        -2 & 0 & 2 \\
+        -1 & 0 & 1
+    \end{bmatrix}
+$$
+
+De forma a testar o filtro, foram utilizadas imagens \texttt{casa1.jpg}, \texttt{casa1.jpg} e \texttt{cameraman.tif}, apresentadas na figura \ref{fig:imagensTeste}.
+
+% É PRECISO ARRANJAR ESTA FIGURA%
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.3\textwidth}
+        \centering
+        \includegraphics[height = 3.5cm]{3_2/casa1.jpg}
+        \subcaption{}
+        \label{casa1}
+
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.3\textwidth}
+        \centering
+        \includegraphics[height = 3.5cm]{3_2/casa2.jpg}
+        \subcaption{}
+        \label{casa2}
+    \end{minipage}
+    \begin{minipage}[H]{0.3\textwidth}
+        \centering
+        \includegraphics[height = 3.5cm]{3_2/cameraman.png}
+        \subcaption{}
+        \label{cameraman}
+    \end{minipage}
+    \caption{\texttt{casa1.png} (a), \texttt{casa2.png} (b) e \texttt{cameraman.tif} (c)}
+    \label{fig:imagensTeste}
+\end{figure}
+
+Aplicando o filtro de Sobel a cada uma destas obtiveram-se os seguintes resultados, apresentados nas figuras \ref{fig:sobelCasas} e \ref{fig:sobelCameraman}.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.8\textwidth]{3_2/casa1_sobel.png}
+        \subcaption{}
+        \label{casa1sobel}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.8\textwidth]{3_2/casa2_sobel.png}
+        \subcaption{}
+        \label{casa2sobel}
+    \end{minipage}
+    \caption{Resultado do filtro de sobel sobre \texttt{casa1.jpg} (a) e \texttt{casa2.jpg} (b)}
+    \label{fig:sobelCasas}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{\textwidth}
+        \centering
+        \includegraphics[width=0.3\textwidth]{3_2/cameraman_sobel.png}
+    \end{minipage}
+    \caption{Resultado do filtro de sobel sobre \texttt{cameraman.tif}}
+    \label{fig:sobelCameraman}
+\end{figure}
+
+É possível observar que no caso da imagem \texttt{casa2.jpg} (\ref{casa2sobel}), para além da forma da casa, as bordas entre as diferentes telhas no telhado ou entre os tijolos são as zonas com maior atividade, devido às transições menos abruptas entre cores. Na imagem \texttt{casa1.jpg}(\ref{casa1sobel}) por sua vez, já é mais difícil identificar a forma da casa.
+
+No caso da imagem \texttt{cameraman.tif}(\ref{fig:sobelCameraman}), é possível distinguir claramente a forma do fotografo e da câmara, porém como nas outras duas fotos, é introduzido algum ruído pela água no fundo do plano.
+
+\subsubsection{Prewitt Filter}
+
+Finalmente, foi testado o filtro de Prewitt sobre as mesmas imagens de teste do caso anterior (Figura \ref{fig:imagensTeste}). Este filtro é aplicado da mesma maneira que o filtro de Sobel, porém utiliza matrizes diferentes durante as convoluções:
+
+$$
+    \textsl{Prewitt} \Rightarrow
+    \begin{bmatrix}
+        -1 & 0 & 1 \\
+        -1 & 0 & 1 \\
+        -1 & 0 & 1
+    \end{bmatrix}
+    \begin{bmatrix}
+        1 & 1 & 1 \\
+        0 & 0 & 0 \\
+        -1 & -1 & -1
+    \end{bmatrix}
+$$
+
+Os resultados das filtragens realizadas em cada imagem encontram-se nas Figuras \ref{fig:prewittCasas} e \ref{fig:prewittCameraman}:
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.8\textwidth]{3_2/casa1_prewitt.png}
+        \subcaption{}
+        \label{casa1prewitt}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.8\textwidth]{3_2/casa2_prewitt.png}
+        \subcaption{}
+        \label{casa2prewitt}
+    \end{minipage}
+    \caption{Resultado do filtro de prewitt sobre \texttt{casa1.jpg} (a) e \texttt{casa2.jpg} (b)}
+    \label{fig:prewittCasas}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{\textwidth}
+        \centering
+        \includegraphics[width=0.3\textwidth]{3_2/cameraman_prewitt.png}
+    \end{minipage}
+    \caption{Resultado do filtro de prewitt sobre \texttt{cameraman.tif}}
+    \label{fig:prewittCameraman}
+\end{figure}
+
+Desde já é possível verificar que, em comparação com os resultados do filtro Sobel, todas as imagens resultantes apresentam bastante menos ruído nas bordas das transições menos abruptas de cor. No caso da \texttt{casa2.jpg} (\ref{casa2prewitt}) ainda é possível discernir a forma da casa e a dos seus elementos, enquanto que na \texttt{casa1.jpg}(\ref{casa1prewitt}) estas formas são muito menos aparentes.
+
+Porém no caso da \texttt{cameraman.tif}, a forma do fotógrafo e da câmara são completamente discerníveis, e o ruído resultante do filtro de Sobel não está presente. 
+
+\subsection{Parte 3}
+
+Para a secção final deste trabalho prático, foram realizadas algumas experiências utilizando o algoritmo de deteção de contorno de Canny. Para o efeito foi utilizada a função do MATLAB \texttt{edge()} que implementa diversos algoritmos de deteção de borda, utilizando o parâmetro \texttt{method = "canny"}. 
+
+\vspace{3pt}
+
+O algoritmo Canny funciona da seguinte maneira:
+\begin{enumerate}
+    \item Filtragem utilizando um filtro gaussiano, de forma a suavizar e remover ruído
+    \item Cálculo do gradiente da imagem
+    \item Obtenção da amplitude e da direção do gradiente
+    \item Eliminação/retenção de bordas através de dois limiares inferior e superior
+    \item Seguimento das bordas por histerese
+\end{enumerate}
+
+A implementação deste algoritmo no MATLAB torna possível definir alguns dos parâmetros do algoritmo. Para as experiências seguintes foi variado o parâmetro \texttt{threshold} que define o limiar inferior de intensidade ao qual as bordas serão eliminadas e o limiar superior ao qual as bordas serão mantidas. Também se variou o parâmetro \texttt{sigma}, que define o desvio padrão do filtro gaussiano de entrada.
+
+Primeiramente fixaram-se os valores de threshold em $[0.1, 0.5]$ e variou-se o sigma do filtro aplicado sobre o ficheiro \texttt{cameraman.tif} (Figura \ref{cameraman}) para obter os resultados da Figura \ref{fig:thresh0.1:0.5}: 
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.6\textwidth]{3_3/Threshold0.1_0.5-Sigma0.1.png}
+        \subcaption{}
+        \label{thresh0.1:0.5sigma0.1}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.6\textwidth]{3_3/Threshold0.1_0.5-Sigma1.png}
+        \subcaption{}
+        \label{thresh0.1:0.5sigma1}
+    \end{minipage}
+    \caption{Deteção de contorno Canny com o \textsl{threshold} = [0.1, 0.5] e sigma igual a 0.1 (a) e 1 (b)}
+    \label{fig:thresh0.1:0.5}
+\end{figure}
+
+Neste caso, como os valores de \textsl{threshold} são relativamente baixos, verifica-se que grande parte dos contornos presentes na fotografia foram detetados, como a separação entre a água e o plano de fundo ou até mesmo alguns detalhes faciais do fotógrafo. Ao aumentar o valor de sigma observa-se que alguns dos contornos são perdidos devido à suavização causada pelo filtro.
+
+Finalmente, ao aumentar ambos os valores de threshold para $[0.3, 0.7]$, verifica-se que menos detalhes são reconhecidos como contornos, e apenas parte do fotógrafo e a câmara são reconhecidos. Porém ao aumentar o valor do desvio padrão do filtro verifica-se que uma borda do plano de fundo passa a ser reconhecida mas que o contorno câmara passa a ficar distorcido. 
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.6\textwidth]{3_3/Threshold0.3_0.7-Sigma0.1.png}
+        \subcaption{}
+        \label{thresh0.3:0.7sigma0.1}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.6\textwidth]{3_3/Threshold0.3_0.7-Sigma1.png}
+        \subcaption{}
+        \label{thresh0.3:0.7sigma1}
+    \end{minipage}
+    \caption{Deteção de contorno Canny com o \textsl{threshold} = [0.3, 0.7] e sigma igual a 0.1 (a) e 1 (b)}
+    \label{fig:thresh0.3:0.7}
+\end{figure}
+
+\end{document}

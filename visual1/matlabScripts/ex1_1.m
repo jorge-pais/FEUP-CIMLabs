@@ -1,35 +1,71 @@
-close all; clear all;
-%
-% Codificação de informação multimédia
-% Trabalho 3 - Visual Part assignment 1
-%
+close all; clear;
 
-IMAGE_FILE = '../images/testRGB.bmp';
+%1.1.1
+img = imread("lighthouse.png");
 
-% 1.1.1
-A = imread(IMAGE_FILE);
-figure(1); imshow(A);
-title('Original picture');
+%1.1.2
+imgR=img(:,:,1);
+imgG=img(:,:,2);
+imgB=img(:,:,3);
 
-% 1.1.2
-figure(2); title('Seperate Colour Channels')
-length = size(A); length = length(1:2);
-% These first lines display each of the colour channels as gray scale
-subplot(2,3,1); imshow(A(:,:,1)); title('Red');
-subplot(2,3,2); imshow(A(:,:,2)); title('Green');
-subplot(2,3,3); imshow(A(:,:,3)); title('Blue');
-% These second lines are to isolate each colour channel
-subplot(2,3,4); imshow(cat(3, A(:,:,1), zeros(length), zeros(length)));
-subplot(2,3,5); imshow(cat(3, zeros(length), A(:,:,2), zeros(length)));
-subplot(2,3,6); imshow(cat(3, zeros(length), zeros(length), A(:,:,1)));
+figure(1);
+imshow(img);
+fontSize = 10;
+title('Original RGB Image', 'FontSize', fontSize);
 
-% 1.1.3
-A_hsv = rgb2hsv(A);
-figure(3); title('HSV conversion');
-imshow(A_hsv);
+dim = size(img); dim = dim(1:2);
 
-% 1.1.4
-figure(4); title('Seperate HSV Channels')
-subplot(1,3,1); imshow(A_hsv(:,:,1)); title('Hue');
-subplot(1,3,2); imshow(A_hsv(:,:,2)); title('Saturation');
-subplot(1,3,3); imshow(A_hsv(:,:,3)); title('Value');
+figure(2);
+subplot(2,3,1);
+imshow(imgR);
+title('Red Channel', 'FontSize', fontSize);
+
+subplot(2,3,2);
+imshow(imgG);
+title('Green Channel', 'FontSize', fontSize);
+
+subplot(2,3,3);
+imshow(imgB);
+title('Blue Channel', 'FontSize', fontSize);
+
+
+subplot(2,3,4);
+imshow(cat(3, imgR, zeros(dim), zeros(dim)));
+title('Colored Red Channel', 'FontSize', fontSize);
+
+subplot(2,3,5);
+imshow(cat(3, zeros(dim), imgG, zeros(dim)));
+title('Colored Green Channel', 'FontSize', fontSize);
+
+subplot(2,3,6);
+imshow(cat(3, zeros(dim), zeros(dim), imgB));
+title('Colored Blue Channel', 'FontSize', fontSize);
+
+%1.1.3
+imgHSV = rgb2hsv(img);
+
+figure(3);
+imshow(imgHSV);
+title('Original HSV Image', 'FontSize', fontSize);
+
+imgH=imgHSV(:,:,1);
+imgS=imgHSV(:,:,2);
+imgV=imgHSV(:,:,3);
+
+figure(4);
+%subplot(1,3,1);
+imshow(imgH);
+title('Hue Channel', 'FontSize', fontSize);
+
+figure(5);
+%subplot(1,3,2);
+imshow(imgS);
+title('Saturation Channel', 'FontSize', fontSize);
+
+figure(6);
+%subplot(1,3,3);
+imshow(imgV);
+title('Value/Intensity Channel', 'FontSize', fontSize);
+
+
+

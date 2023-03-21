@@ -8,9 +8,9 @@ IMAGE_FILE = 'cameraman.tif';
 
 A = imread(IMAGE_FILE);
 figure(1)
-imshow(A); title('Original')
+imshow(A); title('Original'); drawnow; pause
 
-THRESHOLD = 0.7; SIGMA = 0.1;
+THRESHOLD = [0.3 0.7]; SIGMA = 1;
 
 A_canny = edge(A, "canny", THRESHOLD, SIGMA);
 figure(2)
