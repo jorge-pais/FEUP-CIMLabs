@@ -1,4 +1,4 @@
-% this script improts an image, let's the user to select a circular region
+% this script imports an image, let's the user to select a circular region
 % in the image and then applies a sharpen filter to the select region
 % it asks the user to indicate the strength of the sharpen filter
 
