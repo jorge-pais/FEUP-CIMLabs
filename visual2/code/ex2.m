@@ -7,10 +7,14 @@ figure; imshow(A);
 
 segmentedImage = splitmerge(A, 2, @eval);
 
+disp("Segments found: ");
+disp(length(unique(segmentedImage)))
+
 figure; imshow(labeloverlay(A, segmentedImage))
 
 function a = eval(region)
-    threshold = 10;
+    sd = std2(region);
+    m = mean2(region);
 
-    a = (mean(mean(region(:)))) > threshold;
+    a = (sd > 10) & ((m > 80/255) | (m < 40/255));
 end

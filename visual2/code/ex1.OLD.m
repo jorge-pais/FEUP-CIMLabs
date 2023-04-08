@@ -20,7 +20,9 @@ points = ginput(2); points = floor(points);
 pointFG = points(1, :); pointBG = points(2, :);
 
 segmentedImage = kMeansImage(A_hsv(:,:,1), pointFG, pointBG, 3);
-A_noBG = uint8(zeros(H, W, 3));
+
+%{
+ A_noBG = uint8(zeros(H, W, 3));
 for i = 1:H
     for j = 1:W
         if segmentedImage(i,j) == 0 %BG
@@ -29,8 +31,10 @@ for i = 1:H
             A_noBG(i, j, :) = A(i,j,:);
         end
     end
-end
+end 
+%}
+
 
 figure; imshow(segmentedImage);
 % now we can convert the image to be just the foreground
-figure; imshow(A_noBG);
+figure; imshow(labeloverlay(A, segmentedImage));
