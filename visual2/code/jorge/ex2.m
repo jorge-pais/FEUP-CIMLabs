@@ -3,16 +3,16 @@ clear; close all;
 IMAGE_FILE = "../someImages/Fosforos.tif";
 
 A = imread(IMAGE_FILE);
-figure; imshow(A);
+figure; imshow(A); 
 
-segmentedImage = splitmerge(A, 2, @eval);
+segmentedImage = splitmerge(A, 2, @predicate);
 
 disp("Segments found: ");
 disp(length(unique(segmentedImage)))
 
 figure; imshow(labeloverlay(A, segmentedImage))
 
-function a = eval(region)
+function a = predicate(region)
     sd = std2(region);
     m = mean2(region);
 

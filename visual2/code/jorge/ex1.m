@@ -16,6 +16,6 @@ imageSegmentsHSV = imsegkmeans(im2single(A_hsv), 2);
 imageSegmentsHue = imsegkmeans(im2single(A_hsv(:,:,1)), 2);
 
 % now we can display the resulting segments
-figure; imshow(labeloverlay(A, imageSegmentsRGB)); drawnow; title('Image segments from RGB'); 
+figure; imshow(labeloverlay(A, imageSegmentsRGB)); drawnow; title('Image segments from RGB');
 figure; imshow(labeloverlay(A, imageSegmentsHSV)); title('Image segments from HSV');
-figure; imshow(labeloverlay(A, imageSegmentsHue)); title('Image segments from Hue channel'); 
+figure; imshow(labeloverlay(A, imageSegmentsHue)); title('Image segments from Hue channel');
