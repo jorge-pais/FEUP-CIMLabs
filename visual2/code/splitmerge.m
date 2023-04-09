@@ -1,17 +1,27 @@
 function g = splitmerge(f, mindim, fun)
-    %UNT?TLED Summary of this function goes here
-    %   split and merge algorithm segments image F.
 
     Q=2^nextpow2(max(size(f)));
     [M, N]=size(f);
-    f=padarray(f,[Q-M, Q-N], 'post');
+    f=padarray(f, [Q - M, Q - N], 'post');
+
+    % Perform splitting first
     Z=qtdecomp(f, @split_test, mindim, fun);
+    % Then perform mergin by looking at each quadregion and setting 
+    % all its elements to 1 if the lock statisfies the defined predicate function 
+
+    % First, get the size of the largest block. Useful because Z is sparse.
     Lmax=full(max(Z(:)));
+    % Next, sset the output image initially to all zeros. The MARKER
+    % array i sused later to establish connectivity. 
     g=zeros(size(f));
     MARKER=zeros(size(f));
-    for K=1:Lmax
+
+    % Begin the mergin stage
+    for K = 1:Lmax
         [vals, r, c]=qtgetblk(f, Z, K);
         if ~isempty(vals)
+            % Check the predicate for each of the regions of size K-by-K
+            % with coordinates given by vectors r and c.
             for I=1:length(r)
                 xlow=r(I); ylow=c(I);
                 xhigh=xlow+K-1;
