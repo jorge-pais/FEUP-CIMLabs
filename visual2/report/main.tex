@@ -1,0 +1,463 @@
+\documentclass[10pt,twoside]{article} 
+\usepackage[a4paper,portrait, top=20mm,bottom=15mm,left=25mm,right=25mm]{geometry}
+\author{}
+
+\usepackage[utf8]{inputenc} 
+
+\usepackage[portuguese]{babel}
+\usepackage[T1]{fontenc}
+
+\usepackage{hyphenat} 
+\usepackage{amsmath,amsthm,amsfonts}
+\usepackage[dvipsnames]{xcolor}
+\renewcommand{\figurename}{Figura}
+\renewcommand{\tablename}{Tabela}
+\usepackage{hyperref,graphicx}
+\usepackage{gensymb}
+
+\usepackage{biblatex}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{xcolor}
+
+\usepackage{siunitx}
+\sisetup{detect-all}
+
+\usepackage{graphicx}
+\usepackage{enumitem}
+
+\usepackage{listings}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+% Disable all paragraph indentation
+\setlength{\parindent}{0pt}
+
+\makeatletter
+\renewcommand{\maketitle}{\bgroup\setlength{\parindent}{0pt}
+	\begin{center}
+		\textbf{\@title}
+		
+		\@author
+	\end{center}\egroup
+}
+\makeatother
+
+\title{{\Large\bf\center CIM - Trabalho Visual 2} 
+\\ Segmentação Espacial de Imagem}
+\date{}
+
+\begin{document}
+\maketitle
+\vspace{10pt}
+\noindent
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}@{}l r@{}} %to \textwidth {@{}X[l] X[-1, r]@{}}
+	{\bf CIM 2022/2023} & {\bf David Rainho} up201906994 \\
+	{\bf Turma:} 1MEEC\_T02 & {\bf Jorge Pais} up201904841
+\end{tabular*}
+
+\noindent{\rule{\linewidth}{1.5pt}}
+
+\vspace{20pt}
+No presente trabalho, apresentam-se dois algoritmos de segmentação de imagens baseados em critérios de semelhança, conectividade (adjacência) entre pixeis e/ou conjuntos de pixeis. Segmentação é o processo de particionar uma imagem em regiões distintas com o intuito de, por exemplo, isolar objetos e sujeitos do plano de fundo.
+
+As aplicações práticas abrangem os diversos ramos da ciência. Têm particular relevância na construção de \textit{datasets} úteis, por exemplo, no treino de modelos preditivos de mutações de determinados genes, recorrendo a imagens segmentadas de nódulos.
+
+\section{Segmentação utilizando \textit{Clustering}}
+
+O método de \textit{clustering} apresentado designa-se de \textit{K-means}. Trata-se de um método iterativo que pretende minimizar a distância de cada pixel ao centro do aglomerado de pixeis mais próximo, segmentando esta imagem através destas distâncias.
+
+\subsection{Algoritmo}
+O algoritmo de \textit{clustering} baseado em \textit{K-means} segue as seguintes etapas:
+\begin{enumerate}
+    \item Inicializar os k centroides (aleatoriamente);
+    \item Escolher uma métrica para calcular as distâncias entre os pixeis e os centroides - tipicamente é utilizada a distância euclidiana relativamente aos espaços de cor;
+    \item iniciar etapas iterativas: 
+    \begin{enumerate}
+        \item calcular a distância de todos os pixeis ao centro de todos os aglomerados;
+        \item atribuir os pixeis a cada aglomerado com base na distância mínima;
+        \item calcular a média dos aglomerados, sendo essa a nova posição dos centroides no espaço;
+        \item se a variação da posição dos centroides for inferior a um determinado limiar, termina-se o processo iterativo, caso contrário é iniciada a próxima iteração.
+    \end{enumerate}
+    \item finalmente, os segmentos são determinados verificando pixel a pixel qual é que é o centroide mais próximo
+\end{enumerate}
+
+\subsubsection{Complexidade}
+
+Em termos de complexidade computacional o algoritmo é O(ntk), aonde n é o número total de pixeis na imagem a ser analisada, t é o número de iterações e k é o número de segmentos/\textit{clusters}. Portanto, é evidente que este algoritmo não será o mais eficiente dado que para todas as iterações, todos os pixeis têm de ser analisados.
+
+% ========================== NOTA ==========================
+% Convinha fazer uma analise de complexidade computacional 
+% parecida para o split & merge.
+% ==========================================================
+
+\subsection{Parâmetros e exemplos}
+De forma a testar o algoritmo sobre diferentes imagens e parâmetros, uma implementação do algoritmo \textit{K-means} já existente no \textit{Image Processing Toolbox} do MATLAB foi utilizada através da função \texttt{imsegkmeans()}. Utilizando o \textit{script} \texttt{ImageSegmenter.m}, a segmentação de imagem pode ser efetuada sobre diferentes canais de cores e as suas combinações. Este script permite ler um ficheiro de imagem, selecionar o método a utilizar e realizar a segmentação desejada, mostrando os resultados desta sobrepostos na imagem original.
+
+Primeiramente, foram realizadas experiências do K-means sobre a imagem \texttt{templo.jpg} (Figura \ref{fig:templo}), de forma a separar o templo do plano de fundo. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{clustering/templo.jpg}
+    \caption{Imagem \texttt{templo.jpg}}
+    \label{fig:templo}
+\end{figure}
+
+Olhando para os diferentes canais de cores RGB e HSV (figuras \ref{fig:temploColour}), pode-se verificar através das diferentes intensidades entre os planos de fundo e o sujeito que alguns destes mostram uma melhor separação entre estes. O histograma de cada canal também é apresentado para ajudar na identificação da segmentação.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.495\textwidth}
+        \includegraphics[width=\textwidth]{clustering/temploRGB.png}
+        \subcaption{}
+        \label{temploRGB}
+    \end{minipage}
+    \begin{minipage}[H]{0.495\textwidth}
+        \includegraphics[width=\textwidth]{clustering/temploHSV.png}
+        \subcaption{}
+        \label{temploHSV}
+    \end{minipage}
+    \caption{Os diferentes canais dos espaços de cor (a) RGB e (b) HSV para a fotografia do templo}
+    \label{fig:temploColour}
+\end{figure}
+
+Como apenas nos interessa separar um sujeito do plano de fundo, é utilizado o K-means com k=2. Na figura \ref{fig:templeSegmentation}, é apresentado resultado desta segmentação utilizando tanto os canais RGB como o canal \textit{Hue} de matiz. 
+
+É então evidente que a segmentação por \textit{clustering} utilizando o canal \textit{Hue} (\ref{templeSegHue}) é claramente superior ao resultado obtido quando se segmenta com base nos canais de RGB (\ref{templeSegRGB}). Isto revela que a qualidade deste processo é bastante dependente dos critérios que são utilizados para calcular as distâncias de cada pixel ao ponto central de cada \textit{cluster}.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{clustering/temploSegmentsRGB.png}
+        \subcaption{}
+        \label{templeSegRGB}
+    \end{minipage}
+    \begin{minipage}[H]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{clustering/temploSegmentsHue.png}
+        \subcaption{}
+        \label{templeSegHue}
+    \end{minipage}
+
+    \caption{\centering Resultados da segmentação da fotografia utilizando (a) os três canais RGB e (b) o canal \textit{Hue} do HSV}
+    \label{fig:templeSegmentation}
+\end{figure}
+
+De seguida outras imagens foram testadas de forma a verificar o desempenho do algoritmo para diferentes casos de uso. Na figura \ref{fig:limaoPiao} é possível observar a fotografia \texttt{LimaoPiao.JPG} e o respetivo resultado de segmentação. Para o clustering, foi utilizado o canal de \textit{Blue-Difference Chroma} do espaço YCbCr com k = 3 para identificar o pião e o limão separadamente, dado que este era capaz de expor as diferenças de cor entre os dois objetos. Apesar disto, é evidente que o efeito da iluminação irregular sobre o limão não permitiu capturar completamente a forma deste. Na figura \ref{fig:limaoPiao2seg} é possível verificar que utilizando o canal de \textit{Red-Difference Chroma} que a segmentação dos dois objetos em conjuntos é possível sem grande artefactos como no caso anterior. 
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{clustering/limaoPiao.jpg}
+        \subcaption{}
+        \label{}
+    \end{minipage}
+    \begin{minipage}[H]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{clustering/limaoPiao3seg.png}
+        \subcaption{}
+        \label{}
+    \end{minipage}
+    
+    \caption{\centering (a) Fotografia do Limão e do Pião e a respetiva (b) segmentação utilizando o canal \textit{Blue Chroma}}
+    \label{fig:limaoPiao}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width= 0.4\textwidth]{clustering/redChromaLimaoPiao.png}
+    \caption{Fotografia do Limão e do Pião segmentado através do canal \textit{Red Chroma}}
+    \label{fig:limaoPiao2seg}
+\end{figure}
+
+Até agora foram analisadas apenas imagens a cores, porém o algoritmo também é aplicável em casos a preto e branco, sendo que nestes apenas existe um canal sobre o qual realizar a segmentação. Na figura \ref{fig:Fosforos1} é possível observar a fotografia do ficheiro \texttt{Fosforos\_alinhados.tif}, e o resultado da segmentação com k = 3, de forma a separar as cabeças e os paus dos fósforos.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{clustering/FosforosAlinhados.png}
+        \subcaption{}
+        \label{fosforosOrig}
+    \end{minipage}
+    \begin{minipage}[H]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{clustering/Fosforos3seg.png}
+        \subcaption{}
+        \label{fosforos3seg}
+    \end{minipage}
+    
+    \caption{(a) Fotografia dos fósforos alinhados e (b) a sua segmentação em 3 \textit{clusters}}
+    \label{fig:Fosforos1}
+\end{figure}
+
+Verifica-se que neste caso os resultados não são os melhores, então procedeu-se a realizar a mesma operação para k=5, como na Figura \ref{fosforos5seg}. Partindo deste resultado, foi realizado algum pós-processamento sobre este juntando alguns dos clusters, como na Figura \ref{fosforos5segPOST}. Este resultado é relativamente melhor que o da Figura \ref{fosforos3seg}, porém ainda apresenta alguns artefactos de segmentação devido á textura do tecido no plano de fundo.
+
+De forma a mitigar este efeito, foi realizado pré-processamento sobre a fotografia original sob a forma de um filtro gaussiano (\texttt{imgaussfilt}) e realizado o mesmo procedimento de segmentação em 5 \textit{cluster}, unindo-os. Assim chegou-se ao resultado da figura \ref{fig:fosforos3}, no qual grande parte dos artefactos relativos ao tecido foram atenuados, apesar das formas dos segmentos dos fósforos estarem menos definidos devido á filtragem realizada.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{clustering/Fosforos5seg.png}
+        \subcaption{}
+        \label{fosforos5seg}
+    \end{minipage}
+    \begin{minipage}[H]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{clustering/Fosforos5segPOST.png}
+        \subcaption{}
+        \label{fosforos5segPOST}
+    \end{minipage}
+    
+    \caption{(a) Segmentação da fotografia dos fósforos em 5 \textit{clusters} e (b) a união de alguns destes segmentos}
+    \label{fig:fosforos2}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 0.4\textwidth]{clustering/Fosforos5segPREPOST.png}
+    \caption{Segmentação da imagem dos fósforos alinhados, com pré e pós processamento}
+    \label{fig:fosforos3}
+\end{figure}
+
+
+\subsection{Visão geral}
+Das experiências realizas com o algoritmo, algumas conclusões podem ser retiradas relativamente a este. Primeiramente, o algoritmo é relativamente rápido sendo que este escala linearmente com o tamanho da imagem e o número de classes, para além de que a sua implementação a nível de código é bastante simples. Em segundo lugar, o algoritmo é bastante capaz de segmentar imagens quando existe uma separação clara em termos dos canais de cores, como nas Figuras \ref{fig:templeSegmentation} e \ref{fig:limaoPiao2seg}. Finalmente, o \textit{K-means} é bastante versátil dado que pode ser configurado para detetar um número específico de \textit{clusters} e utilizar diferentes métricas para avaliar a distância de cada pixel aos centroides.
+
+Não obstante, é importante clarificar que o algoritmo não é perfeito e não é o apropriado para casos em que é preciso segmentar imagens com características bastante diferentes. Como demonstrado ao longo das experiências, os canais de cores utilizados afetam bastante os resultados obtidos (Figura \ref{fig:templeSegmentation} e os casos em que só existe um único canal (\textit{grayscale}) tornam-se bastante difíceis. Como é observável na Figura \ref{fosforos3seg}, o algoritmo é bastante sensível a estruturas e texturas mais complexas, sendo necessário aplicar algum pré-processamento nestes casos. Também é importante referir que os resultados do algoritmo são dependentes dos pontos que são utilizados para inicializar os centroides, como por exemplo na Figura \ref{fig:templeSegmentation} aonde o templo e o plano de fundo foram identificados com os segmentos trocados entre os dois casos.
+
+
+\section{Segmentação utilizando \textit{Split and merge}}
+O método de \textit{Split and merge} pode ser dividido em duas fases. Começa-se por determinar regiões semelhantes segundo critérios pré-estabelecidos, que podem ficar isoladas, e depois caso sejam semelhantes e estejam adjacentes, conectam-se numa única região.
+\subsection{Algoritmo (alto nível)}
+\begin{enumerate}
+    \item definir um critério de semelhança entre regiões;
+    \item escolher o tamanho mínimo para um bloco na operação de decomposição (deve ser um inteiro, potência de 2 e positivo);
+    \item iniciar fase de decomposição: \begin{enumerate}
+        \item dividir em regiões de igual tamanho 
+        \item através do critério verifica-se se as regiões são semelhantes. Se sim, não subdivide. Caso contrário, termina decomposição dessa região;
+    \end{enumerate}
+    \item iniciar fase de junção: \begin{enumerate}
+        \item regiões conectadas e semelhantes são reconstruídas como uma única região.
+    \end{enumerate}
+\end{enumerate}
+
+\subsubsection{Complexidade}
+Simplificou-se a dedução, assumindo que o critério retorna sempre \textit{true} (O(1)), ou seja, máxima subdivisão da imagem e os blocos com menor dimensão possível 2 por 2.
+Na fase de decomposição o algoritmo apresenta complexidade O(log(n)), com n o número de píxeis. Nesse passo são necessárias $log_4(\frac{n}{2\times2})$ divisões da imagem. Se o critério tivesse complexidade O(n), então a decomposição seria O(nlog(n)).\\
+
+A implementação do passo de junção envolve uma função que nos era desconhecida (\texttt{imreconstruct}). Após alguma pesquisa, descobrimos que em MATLAB era implementada recorrendo ao algoritmo \textit{fast hybrid reconstruction}. Contudo, em Vincent\cite{1} refere a dificuldade em definir a sua complexidade. É possível, no entanto, afirmar que é muito mais lento que a decomposição da imagem.
+
+\subsection{Parâmetros}
+O método \textit{Split and Merge} dispõe de alguns parâmetros e métodos possíveis de afinar, nomeadamente a menor divisão dos blocos e a função de critério de semelhança. Além disso, pode ser realizado algum pré e pós processamento das imagens e máscaras para melhorar o desempenho do método, respetivamente.\\
+
+De modo a tornar mais eficiente o processo de segmentação, existem algumas regras heurísticas a seguir na criação do critério de semelhança.\\
+
+Durante a fase de decomposição em regiões mais pequenas, o critério verifica se cada uma delas é homogénea, no entanto, características locais (em regiões de dimensões reduzidas) não se refletem em características globais da imagem (regiões de dimensões elevadas, compostas pela união de outras mais reduzidas), levando à paragem precoce do algoritmo. Assim, recomenda-se a subdivisão das regiões até terem dimensões reduzidas, por exemplo, 16 por 16.\\
+
+Alguns dos atributos úteis na definição de homogeneidade são:
+\begin{itemize}
+    \item Desvio padrão dos pixéis na região;
+    \item Valor médio dos pixéis;
+    \item Valor máximo/ mínimo dos píxeis;
+\end{itemize}
+
+O desvio padrão é útil quando existe contraste entre a variação dos valores dos píxeis do objeto a particionar e o resto da imagem. Pode tratar-se de textura do objeto muito distinta do fundo, como é o caso das imagens \texttt{avion.JPG} (Figura \ref{fig:aviao}) e \texttt{ya.JPG} (\ref{fig:ya}). Se usado em imagens com texturas também no plano de fundo, pode originar muito ruído nessas regiões.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{SaM/aviao/aviao_mask.png}
+        \subcaption{}
+        \label{aviaoMask}
+    \end{minipage}
+    \begin{minipage}[H]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{SaM/aviao/aviao_over.png}
+        \subcaption{}
+        \label{aviaoOver}
+    \end{minipage}
+    
+    \caption{(a) Segmentação da fotografia do avião e (b) a imagem original do avião sobreposta pela máscara.}
+    \label{fig:aviao}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.35\textwidth}
+        \includegraphics[width=\textwidth]{SaM/ya/ya_mask.png}
+        \subcaption{}
+        \label{yaMask}
+    \end{minipage}
+    \begin{minipage}[H]{0.35\textwidth}
+        \includegraphics[width=\textwidth]{SaM/ya/ya_over.png}
+        \subcaption{}
+        \label{yaOver}
+    \end{minipage}
+    
+    \caption{(a) Segmentação da fotografia da avestruz e (b) a imagem original da avestruz sobreposta pela máscara.}
+    \label{fig:ya}
+\end{figure}
+
+Caso a imagem apresente variações elevadas, pode-se recorrer ao valor (médio, máximo ou mínimo) dos píxeis. Esta análise pode beneficiar da escolha cuidada do canal de cores e algum pré-processamento. Na imagem \texttt{urzo1.JPG}, foi usado o canal de cor vermelho, que aumenta o contraste da parte superior do urso (cor acastanhada) relativamente ao fundo, obtendo-se o resultado da Figura \ref{fig:urso}. Infelizmente, a mudança de canal dificultou a segmentação conjunta das pernas dos ursos, devido à elevada variabilidade, existência de sombras e o solo também ele com tons semelhantes aos ursos.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{SaM/urso/urso_mask.png}
+        \subcaption{}
+        \label{ursoMask}
+    \end{minipage}
+    \begin{minipage}[H]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{SaM/urso/urso_over.png}
+        \subcaption{}
+        \label{ursoOver}
+    \end{minipage}
+    
+    \caption{(a) Segmentação da fotografia do urso e (b) a imagem original do urso sobreposta pela máscara.}
+    \label{fig:urso}
+\end{figure}
+
+Na Figura \ref{fig:fosforos_desalinhados}, verifica-se a dificuldade que as sombras impõem na segmentação da imagem. Assim como a ``cabeça" dos fósforos, a sombra tem valores de píxel reduzidos, ausência de textura evidente e estão em contacto com o ``corpo" dos fósforos.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{SaM/Fosf_desalinhados/fosf2_mask.png}
+        \subcaption{}
+        \label{fosf2Mask}
+    \end{minipage}
+    \begin{minipage}[H]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{SaM/Fosf_desalinhados/fosf2_over.png}
+        \subcaption{}
+        \label{fosf2Over}
+    \end{minipage}
+    
+    \caption{(a) Segmentação da fotografia dos fósforos desalinhados e (b) a imagem original dos fósforos desalinhados sobreposta pela máscara.}
+    \label{fig:fosforos_desalinhados}
+\end{figure}
+
+A iluminação e disposição dos objetos a segmentar numa imagem são cruciais na qualidade da partição resultante. Na Figura \ref{fig:fosforos_alinhados}, os fósforos apresentam todos a mesma orientação e sombra desprezável. Estas características facilitam o processo de definição do critério de homogeneidade e geram melhores resultados.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{SaM/Fosf/mascara.png}
+        \subcaption{}
+        \label{fosfMask}
+    \end{minipage}
+    \begin{minipage}[H]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{SaM/Fosf/overlayed.png}
+        \subcaption{}
+        \label{fosfOver}
+    \end{minipage}
+    
+    \caption{(a) Segmentação da fotografia dos fósforos alinhados e (b) a imagem original dos fósforos alinhados sobreposta pela máscara.}
+    \label{fig:fosforos_alinhados}
+\end{figure}
+
+Por fim, a obtenção da segmentação implica analisar a imagem e tentar dividir o objeto a particionar em diferentes partes, cada com as suas características, de modo a criar um critério de semelhança mais complexo. Na figura \ref{fig:carro}, está exemplificado o resultado da conjugação de diferentes critérios mais fracos, representados na figura \ref{fig:carro_partes}\footnote{As variáveis m, sd, e maxim representam o valor médio, desvio padrão e valor máximo dos píxeis numa região, respetivamente.}.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{SaM/carro/car_mask.png}
+        \subcaption{}
+        \label{carroMask}
+    \end{minipage}
+    \begin{minipage}[H]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{SaM/carro/car_over.png}
+        \subcaption{}
+        \label{carroOver}
+    \end{minipage}
+    
+    \caption{(a) Segmentação da fotografia dos carro e (b) a imagem original dos carro sobreposta pela máscara.}
+    \label{fig:carro}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{SaM/carro/criterios/partebaixo.png}
+        \subcaption{}
+        \label{carro_baixo}
+    \end{minipage}
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{SaM/carro/criterios/partesuperior.png}
+        \subcaption{}
+        \label{carro_topo}
+    \end{minipage}
+    \begin{minipage}[H]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{SaM/carro/criterios/sdgreater16.png}
+        \subcaption{}
+        \label{carro_ligacao}
+    \end{minipage}
+    
+    \caption{(a) Segmentação da lateral do carro - critério $m > 99 \ \& \ m < 115 \ \& \ sd < 2$, (b) segmentação do topo do carro - critério $maxim > 160$ e (c) Segmentação das margens do carro para auxiliar a ligação das restantes - critério $sd>16$.}
+    \label{fig:carro_partes}
+\end{figure}
+
+Algumas das segmentações realizadas não teriam sido possíveis sem efetuar algum pré-processamento e pós-processamento.\\
+
+Na imagem dos fósforos alinhados, como pré-processamento, usou-se um filtro gaussiano (dimensões 7 por 7 e desvio padrão 2), de modo a uniformizar as regiões do fósforo e permitindo destacar do fundo, recorrendo ao valor médio dos píxeis.\\
+
+Após a segmentação, algumas das máscaras obtidas (avião, ursos e carros) apresentavam outros elementos que não pertenciam ao objeto pretendido e não estavam ligados ao mesmo. A função MATLAB \texttt{bwareafilt()} permite manter somente o maior agregado, correspondente aos objetos. Além disso, algumas imagens apresentavam alguma granularidade no interior das regiões do objeto, que poderam ser preenchidas usando a função MATLAB \texttt{imfill()}.
+
+% Dificuldade nos intervalos e  < > não significa exatamento o inverso
+
+% Diferentes espaços de cores ou canais de cores
+
+%[Fosforos alinhados:  Pre-processing (I=imfilter(I,fspecial("gaussian",5,2)); + retirar as bordas com algum "lixo"); Post-processing (Limpar margens); Critério (flag = (minim > 45) & (maxim < 155);)
+
+% result(1:2,:)=255;
+% result(:,1:2)=255;
+% result(:,557:558)=255;
+% result(557:558,:)=255;]
+
+%[Carro: Post-processing (Limpar conteúdo circundante); Critério (flag = sd>16 | (m > 99 & m < 115 & sd < 2) | (maxim > 160) | (maxim < 20 & minim > 12);)
+
+%result = lab(I,0,1);
+%result(1:110,:)=0;
+%result(:,1:5)=0;
+%result(210:256,:)=0;]
+
+
+
+\subsection{Visão geral}
+\subsubsection{Vantagens}
+\begin{itemize}
+    \item apresenta mecanismos capazes de tornar o método mais robusto a ruído, nomeadamente o parâmetro que define o menor tamanho das regiões;
+    \item Não requer informação prévia sobre o número de segmentos/partições numa imagem;
+    %\item capacidade de ter segmentação com diferentes níveis de detalhe
+\end{itemize}
+\subsubsection{Desvantagens}
+\begin{itemize}
+    \item Requer conhecer as características que distinguem os diferentes segmentos, de modo a criar um critério de semelhança eficaz;
+    \item O processo de subdivisão em diferentes regiões torna o modelo relativamente lento, quando comparado com \textit{clustering};
+    \item Pode segmentar excessivamente imagens;
+    \item Sensibilidade a alterações dos parâmetros, o que dificulta a afinação dos mesmos;
+    \item Dificuldade a segmentar estruturas complexas ou muito semelhantes/uniformes entre si.
+\end{itemize}
+
+\begin{thebibliography}{1}
+\bibitem{vincent}
+L. Vincent, "Morphological grayscale reconstruction in image analysis: applications and efficient algorithms," in IEEE Transactions on Image Processing, vol. 2, no. 2, pp. 176-201, April 1993, doi: 10.1109/83.217222.
+\end{thebibliography}
+
+\end{document}
