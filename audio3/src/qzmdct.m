@@ -10,8 +10,7 @@
 % Anibal Ferreira, University of Porto, PORTUGAL / ATC Labs, USA
 %
 %--------------------------------------------------------------------------
-close all;
-clear all;
+close all; clear;
 
 % sets the desired SNR (tentative only !),
 % specifies if noise is white or colored

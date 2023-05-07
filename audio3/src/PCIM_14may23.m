@@ -1,91 +1,79 @@
+clear; close all;
+
 %
 % Este conjunto de comandos Matlab faz parte das aulas
-% da UC CODIFICAÇÃO DE INFORMAÇÃO MULTIMÉDIA
+% da UC CODIFICAï¿½ï¿½O DE INFORMAï¿½ï¿½O MULTIMï¿½DIA
 % (CIM), integrada no Mestrado  em
-% Engenharia Electrotécnica e Computadores (M.EEC), da
+% Engenharia Electrotï¿½cnica e Computadores (M.EEC), da
 % Faculdade de Engenharia da Universidade do Porto (FEUP).
 %
-% É permitida a utilização por outras pessoas que não
-% frequentem a disciplina, unicamente para objectivos académicos
-% ou auto-estudo e desde que seja feita menção, em qualquer trabalho
+% ï¿½ permitida a utilizaï¿½ï¿½o por outras pessoas que nï¿½o
+% frequentem a disciplina, unicamente para objectivos acadï¿½micos
+% ou auto-estudo e desde que seja feita menï¿½ï¿½o, em qualquer trabalho
 % publicado ou exposto publicamente, da fonte: "Elementos de Estudo
 % da Unidade Curricular CIM do curso M.EEC (FEUP)".
 %
-% Qualquer outra utilização deverá ser objecto de um pedido
-% de autorização dirigido por escrito ao autor e que só
-% será válido se houver uma resposta EXPLÍCITA e favorável.
+% Qualquer outra utilizaï¿½ï¿½o deverï¿½ ser objecto de um pedido
+% de autorizaï¿½ï¿½o dirigido por escrito ao autor e que sï¿½
+% serï¿½ vï¿½lido se houver uma resposta EXPLï¿½CITA e favorï¿½vel.
 %
-% (c) Aníbal Ferreira; ajf(at)fe.up.pt
+% (c) Anï¿½bal Ferreira; ajf(at)fe.up.pt
 %
 
-% objectivo: análise, modificação no domínio das frequências e síntese de
-% um sinal áudio
-
+% objectivo: anÃ¡lise, modificaÃ§Ã£o no domÃ­nio das frequÃªncias e sÃ­ntese de
+% um sinal Ã¡udio
 
 
 % input audio file (raw PCM)
 %
-inpfile = 'sound.wav';
-outfile = 'newsound.wav';
+inpfile = '../audio/sound.wav';
+outfile = '../audio/newsound_coloured_5dB.wav';
 
 %
-% N        = comprimento da transformada DFT (calculada através da FFT)
-% N/2      = sobreposição entre tramas, i.e, overlap é de 50%
-% win      = janela de análise (qual a sua utilidade ?)
+% N        = comprimento da transformada DFT (calculada atrav'es da FFT)
+% N/2      = sobreposiÃ§Ã£o entre tramas, i.e, overlap Ã© de 50%
+% win      = janela de anÃ¡lise (qual a sua utilidade ?)
 %
-N=1024; N2=N/2;
-win=sin(pi/N*[0:(N-1)].');
+% Ans: esta janela de anÃ¡lise para minimizar as amplitudes dos pontos nas extremidades temporais dos segmentos, e portanto minizar a diferenÃ§a que a anÃ¡lise possa ter entre os diferentes segmentos
+N = 1024; N2 = N/2;
+win = sin(pi/N*(0:(N-1)).');
 
 %
-% lê ficheiro áudio
+% lÃª ficheiro Ã¡udio
 %
-[datain,FS]=audioread(inpfile); % NOTA: dados surgem normalizados entre 0 e 1
-% [datain,FS,bits]=wavread(inpfile); % OLD
-% disp('bits por amostra: '); bits
+[datain, FS] = audioread(inpfile); % NOTA: dados surgem normalizados entre 0 e 1
+nread = length(datain);
+disp('FrequÃªncia de amostragem: '); FS
 
-nread=length(datain);
-disp('Frequência de amostragem: '); FS
-
-% vector de saída
+% vector de saï¿½da
 dataout = zeros(size(datain));
-
-%
-% NOTA: alternativa de leitura de ficheiro áudio em PCM "raw"
-% (ou seja sem cabeçalho identificador), a leitura é binária
-% e através de "shorts" já que se sabe que cada amostra está
-% representada numa palavra representando um inteiro de 16 bits,
-% como esta palavra inclui sinal, a gama possível é [-32768, 32767]
-% a gama normalizada correpondente é [-1.0, 1.0[
-%
-%fid = fopen(inpfile,'r');
-%[data, nread] = fread(fid,'short');
-%fclose(fid);
-
-
-
 tmpdata = zeros(N,1);	%% input (int) data
 
-% NOTA: usamos para visualizar só os pontos
-% entre 1 e N/2+1 da análise de Fourier (calculada
-% através da FFT) já que os restantes são uma
-% repeticão destes, porquê ?
-regiaofreq = [1:N2+1];
+% NOTA: usamos para visualizar sÃ³ os pontos
+% entre 1 e N/2+1 da anÃ¡lise de Fourier (calculada
+% atravÃ©s da FFT) jÃ¡ que os restantes sÃ£o uma
+% repeticÃ£o destes, porquÃª ?
+%
+% Ans: o sinal que estamos a utilizar Ã© real, e portanto na sua representaÃ§Ã£o no dominio de fourier o seu espectro repete-se
+regiaofreq = 1:N2+1;
 
-frame=1;
+frame = 1;
 
-while((frame+1)*N2 < nread),
+% relaÃ§ao signal-to-mask desejada para a quantizaÃ§ao
+SMR = 1; % dB
 
-%    
-% NOTA: a instrução seguinte é usada para
+% este ciclo faz o varrimento e o processamento do sinal por segmentos
+while((frame+1)*N2 < nread)
+
+% NOTA: a instruÃ§Ã£o seguinte Ã© usada para
 % delimitar o segmento que se pretende seleccionar
-
    varre = [1+(frame-1)*N2:(frame+1)*N2];
 
-   tmpdata=datain(varre);
+   tmpdata = datain(varre);
 
 % representa sinal temporal
    figure(1);
-   plot([0:N-1],tmpdata(1:N));
+   plot([0:N-1], tmpdata(1:N));
    xlabel('Amostras temporais');
    ylabel('Amplitude normalizada');
    title('Sinal nos Tempos');
@@ -93,46 +81,48 @@ while((frame+1)*N2 < nread),
 %
 % FFT
 %
-   tmpdata=tmpdata.*win;
-   fdata=fft(tmpdata);
-   magnitude=eps+abs(fdata);
-   fase=phase(fdata);
+   tmpdata = tmpdata.*win;
+   fdata = fft(tmpdata);
+   magnitude = eps+abs(fdata);
+   fase = angle(fdata);
 
    figure(2);
    plot(FS/N*(regiaofreq-1),20*log10(magnitude(regiaofreq)));
-   xlabel('Frequência');
+   xlabel('FrequÃªncia');
    ylabel('Densidade Espectral (dB)');
-   title('Sinal nas Frequências');
+   title('Sinal nas FrequÃªncias');
    
-   
-%   aqui tem lugar a modificação espectral
+%   aqui tem lugar a modificaÃ§Ã£o espectral
 
-%   ruído de quantização fica com espectro plano
+%   ruÃ­do de quantizaÃ§Ã£o fica com espectro plano
 %   ...
+   %Ps = sum(abs(fdata).^2); % PotÃªncia do espetro do segmento
+   %quantum = sqrt(12*Ps/(N*10^(SMR/10))); % Passo de quantizaÃ§Ã£o
+   %X_Q = floor(0.5+0.5*j + fdata./quantum);  % Sinal quantizaÃ§Ã£o DFT
 
-
-%  ruído de quantização fica com espectro semelhante ao do sinal (SMR constante)
+%  ruÃ­do de quantizaÃ§Ã£o fica com espectro semelhante ao do sinal (SMR constante)
 %  ...
-
-
-
+   Ps = abs(fdata).^2;
+   quantum = sqrt(12.*Ps./(10^(SMR/10)));
+   X_Q = floor(0.5 + 0.5*j + fdata./quantum);
 %
 % IFFT
-%
-%    fdata=magnitude.*exp(i*fase);
+   %fdata=magnitude.*exp(i*fase);
    
+   fdata = quantum.*X_Q;
+
    figure(2);
    hold on;
-   plot(FS/N*(regiaofreq-1),20*log10(abs(fdata(regiaofreq))),'r');
+   plot(FS/N*(regiaofreq-1), 20*log10(abs(fdata(regiaofreq))) ,'r');
    hold off;
 
-%    fdata(1)=magnitude(1)*sign(exp(i*fase(1))); % porquê ?
-%    fdata(N2+1)=magnitude(N2+1)*sign(exp(i*fase(N2+1))); % porquê ?
-   fdata(N:-1:N2+2)=conj(fdata(2:N2)); % porquê ?
+%    fdata(1)=magnitude(1)*sign(exp(i*fase(1))); % porquÃª ?
+%    fdata(N2+1)=magnitude(N2+1)*sign(exp(i*fase(N2+1))); % porquÃª ?
+   fdata(N:-1:N2+2)=conj(fdata(2:N2)); % porquÃª ?
    
-   tmpdata=real(ifft(fdata));
-   tmpdata=tmpdata.*win;
-   dataout(varre)=dataout(varre)+tmpdata;
+   tmpdata = real(ifft(fdata));
+   tmpdata = tmpdata.*win;
+   dataout(varre) = dataout(varre)+tmpdata;
    
    figure(1);
    hold on;
@@ -140,14 +130,21 @@ while((frame+1)*N2 < nread),
    hold off;
 
    pause;
-   frame=frame+1
+   frame=frame+1;
 
 end
 
-% grava sinal de saída
+% grava sinal de saï¿½da
 audiowrite(outfile, dataout, FS);
 % wavwrite(dataout, FS, bits, outfile); % OLD
 
 % calculo do SNR: de modo identico ao utilizado em qzmdct.m
+
+error = dataout - datain;
+Psignal = sum(datain.^2);
+Pnoise = sum(error.^2);
+SNR = 10*log10(Psignal/Pnoise);
+
+disp('Final SNR: '); SNR
 
 disp('Fim de processamento.');
