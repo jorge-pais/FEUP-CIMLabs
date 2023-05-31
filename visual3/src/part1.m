@@ -20,7 +20,7 @@ input_video = VideoReader(INPUT_FILE);
 
 cutFrames = part1segmenter(input_video, 'colourHistogram', 2031, true);
 
-% Save the video file and generate a
+% Save the video file and generate a text file w
 output = VideoWriter(OUTPUT_FILE, 'Archival'); % Motion JPEG 2000 (mpg)
 open(output)
 

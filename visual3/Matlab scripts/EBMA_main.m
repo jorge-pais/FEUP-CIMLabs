@@ -6,12 +6,17 @@
 clear all;
 close all;
 
-dx=352;dy=288;
-frame1=fread(fopen('car1.yuv'),[dx,dy]);
-frame2=fread(fopen('car2.yuv'),[dx,dy]);
+INPUT_FILE = '../videoSequences/wg_cs_1.mpg';
 
-img1=zeros(dy,dx);img2=zeros(dy,dx);
-img1=frame1'; img2=frame2';
+videoFile = VideoReader(INPUT_FILE);
+
+dx = videoFile.width ;dy=videoFile.height;
+
+frame1 = read(videoFile, 2);
+frame2 = read(videoFile, 3);
+
+img1 = cat(3, frame1(:,:,1)', frame1(:,:,2)', frame1(:,:,3)'); 
+img2 = cat(3, frame2(:,:,1)', frame2(:,:,2)', frame2(:,:,3)');
 
 figure(1);
 image(img1), colormap(gray(256)); axis image;
@@ -32,10 +37,10 @@ mvy=zeros(bdy,bdx); mvx=zeros(bdy,bdx);
 t0 = clock;
 
 %for integer pel EBMA:
-[mvy,mvx,pimg]=EBMA_integer(img1, img2, dy, dx, bsize, vsrange, hsrange, mvy, mvx, pimg);
+[mvy,mvx,pimg] = EBMA_integer(img1, img2, dy, dx, bsize, vsrange, hsrange, mvy, mvx, pimg);
 
 %for half-pel BEMA
-%[mvy,mvx,pimg]=EBMA_half(img1, img2, dy, dx, bsize, vsrange, hsrange, mvy, mvx, pimg);
+%[mvy,mvx,pimg] = EBMA_half(img1, img2, dy, dx, bsize, vsrange, hsrange, mvy, mvx, pimg);
 runtime=etime(clock,t0);
 fprintf('Total running time (second):%6.2f \n',runtime);
 

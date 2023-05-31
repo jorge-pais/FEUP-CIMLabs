@@ -5,7 +5,7 @@
 function [vm,hm,pframe]=EBMA_integer(refframe, newframe, row, col, bsize, vrange, hrange, vm, hm, pframe)
 %compute the motion field between new frame and refframe
 
-%vm and hm stores  an initial motion field, return with the computed
+%vm and hm stores an initial motion field, return with the computed
 %motion field
 %pframe stores an initial predicted frame, return with the final predicted
 %frame using computed motion field

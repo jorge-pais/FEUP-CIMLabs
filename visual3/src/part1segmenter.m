@@ -5,7 +5,7 @@
 %   This is the actual function that implements the segmentation algorithms
 %   
 %   INPUTS:
-%       inputFilename : <string> path to the desired input video file
+%       vidObj : <VideoReader>
 %       algorithm : <string> algorithm to use. Possible values include 
 %        ['luminance', 'spacialActivity', 'ECR', 'colourHistogram'] 
 %       threshold : <double> global threshold value to utilize    
